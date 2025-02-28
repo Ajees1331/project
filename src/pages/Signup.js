@@ -5,6 +5,7 @@ function Signup() {
   return (
     <div>
       <Header />
+      <div className="wrapper"></div>
           </div>
   );
 }
