@@ -1,9 +1,12 @@
 import React from 'react'
+import Header from '../components/Header'
 
 function Signup() {
   return (
-    <div>Signup page</div>
-  )
+    <div>
+      <Header />
+          </div>
+  );
 }
 
-export default Signup
+export default Signup;

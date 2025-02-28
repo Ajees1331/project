@@ -2,7 +2,10 @@ import React from 'react'
 import "./styles.css";
 function Header() {
   return (
-    <div className="navbar">Header</div>
+    <div className="navbar">
+      <p className="logo">Financely.
+        </p>
+      </div>
   )
 }
 
