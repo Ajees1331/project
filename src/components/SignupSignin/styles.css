@@ -4,7 +4,7 @@
     height: auto;
     box-shadow: var(--shadow);
     border-radius: 1rem;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
 }
 
 .title{
