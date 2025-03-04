@@ -7,6 +7,7 @@
 .custom-input{
     border-width: 0;
     border-bottom-width: 1px;
+    margin-bottom: 0.3rem;
     width: 100%;
     padding: 0.5rem 0rem;
     font-size: 1rem;

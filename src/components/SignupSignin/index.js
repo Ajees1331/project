@@ -33,12 +33,10 @@ function SignupSigninComponent() {
           placeholder={"Example@aj123"}
         />
         <Input
-          <Input
-          label={"Confirm Password"}
+           label={"Confirm Password"}
           state={confirmPassword}  
           setState={setconfirmPassword}  
           placeholder={"Example@aj123"}
-        />
         />
       </form>
     </div>
