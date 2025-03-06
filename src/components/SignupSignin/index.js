@@ -1,6 +1,7 @@
 import React, { useState } from 'react';  
 import "./styles.css";
 import Input from '../Input';
+import Button from '../Button';
 
 function SignupSigninComponent() {
   const [name, setName] = useState(""); 
@@ -38,6 +39,10 @@ function SignupSigninComponent() {
           setState={setconfirmPassword}  
           placeholder={"Example@aj123"}
         />
+        <Button text={"Signup using Email and Password"}/>
+        <p style={{ textAlign: "center", margin: 0 }}>or</p>
+        <Button text={"Signup using Google"} blue={true}/>
+
       </form>
     </div>
   );
