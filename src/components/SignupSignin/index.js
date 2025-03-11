@@ -1,18 +1,24 @@
-import React, { useState } from 'react';  
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./styles.css";
 import Input from '../Input';
 import Button from '../Button';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from '../../firebase';
 import { toast } from 'react-toastify';
+import { getFirestore, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+
+const db = getFirestore(); // Initialize Firestore
+const googleProvider = new GoogleAuthProvider(); // Google Auth provider
 
 function SignupSigninComponent() {
-  const [name, setName] = useState(""); 
-  const [email, setEmail] = useState(""); 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
   const [loginForm, setLoginForm] = useState(false); // false for signup, true for signin
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // Sign up with email and password
   function signupWithEmail() {
@@ -31,7 +37,8 @@ function SignupSigninComponent() {
             setPassword("");
             setEmail("");
             setconfirmPassword("");
-            createDoc(user);
+            createDoc(user); // Create Firestore doc for the user
+            navigate("/dashboard"); // Navigate to dashboard
           })
           .catch((error) => {
             console.log("Error: ", error.code, error.message);
@@ -59,8 +66,9 @@ function SignupSigninComponent() {
           const user = userCredential.user;
           console.log("Signed In User: ", user);
           toast.success('Signed in successfully!');
+          createDoc(user); // Create Firestore doc for the user
+          navigate("/dashboard"); // Navigate to dashboard
           setLoading(false);
-          // Redirect or handle successful sign-in
         })
         .catch((error) => {
           console.log("Error: ", error.code, error.message);
@@ -73,10 +81,77 @@ function SignupSigninComponent() {
     }
   }
 
-  // Create user document
+  // Google Sign-In
+  function googleSignIn() {
+    setLoading(true);
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        const user = result.user;
+        console.log("Google Signed In User: ", user);
+
+        // Check if the user already exists in Firestore
+        checkIfDocExists(user).then(docExists => {
+          if (!docExists) {
+            // If no document, create it
+            createDoc(user);
+          } else {
+            // If document exists, show that the user is already registered
+            toast.info("Your document already exists!");
+          }
+
+          toast.success('Signed in with Google!');
+          navigate("/dashboard"); // Navigate to dashboard
+          setLoading(false);
+        }).catch((error) => {
+          console.error("Error checking document existence:", error);
+          toast.error("Something went wrong.");
+          setLoading(false);
+        });
+      })
+      .catch((error) => {
+        console.log("Error during Google Sign-In: ", error.code, error.message);
+        toast.error("Google Sign-In failed. Please try again.");
+        setLoading(false);
+      });
+  }
+
+  // Create user document in Firestore
   function createDoc(user) {
-    // Implement your doc creation logic here
-    console.log("Creating doc for user:", user.uid);
+    const usersCollection = collection(db, "users");
+
+    // Check if the user document already exists
+    checkIfDocExists(user).then(docExists => {
+      if (!docExists) {
+        // If document doesn't exist, create it
+        addDoc(usersCollection, {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || name, // Use the user's displayName (Google Sign-In) or custom name from signup
+          createdAt: new Date(), // Set creation time only if it's a new user
+        })
+        .then(() => {
+          console.log("User document created successfully!");
+          toast.success("Your profile has been created successfully!");
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+          toast.error("Error creating document.");
+        });
+      } else {
+        // If the document exists, notify the user
+        toast.info("Your document already exists!");
+        console.log("User document already exists, no changes made.");
+      }
+    }).catch((error) => {
+      console.error("Error checking document existence:", error);
+    });
+  }
+
+  // Check if a user document already exists
+  async function checkIfDocExists(user) {
+    const q = query(collection(db, "users"), where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty; // If document exists, it returns true, else false
   }
 
   // Switch between signup and signin forms
@@ -132,6 +207,7 @@ function SignupSigninComponent() {
           <Button 
             text={loading ? "Loading..." : loginForm ? "Sign In using Google" : "Sign Up using Google"} 
             blue={true}
+            onClick={googleSignIn} // Google Sign-In button
           />
         </form>
         <p style={{ textAlign: "center" }}>
