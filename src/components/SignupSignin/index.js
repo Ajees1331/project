@@ -82,8 +82,11 @@ function SignupSigninComponent() {
   }
 
   // Google Sign-In
-  function googleSignIn() {
+  function googleSignIn(event) {
+    event.preventDefault();  // Prevent form submission (if the button is inside a form)
     setLoading(true);
+    console.log("Google Sign-In triggered...");
+
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
@@ -109,8 +112,14 @@ function SignupSigninComponent() {
         });
       })
       .catch((error) => {
-        console.log("Error during Google Sign-In: ", error.code, error.message);
-        toast.error("Google Sign-In failed. Please try again.");
+        console.error("Error during Google Sign-In: ", error);  // Log the full error object
+        if (error.code === 'auth/popup-closed-by-user') {
+          toast.error("Popup closed by user");
+        } else if (error.code === 'auth/cancelled-popup-request') {
+          toast.error("Popup request was cancelled");
+        } else {
+          toast.error("Google Sign-In failed. Please try again.");
+        }
         setLoading(false);
       });
   }
@@ -214,7 +223,7 @@ function SignupSigninComponent() {
           {loginForm ? "Don't have an account?" : "Already have an account?"} 
           <span 
             onClick={toggleForm} 
-            style={{ color: "var(--theme)", cursor: "pointer" }}>
+            style={{ color: "var(--theme)", cursor: "pointer" }} >
             {loginForm ? "Sign Up" : "Sign In"}
           </span>
         </p>
