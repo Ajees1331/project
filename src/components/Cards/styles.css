@@ -1,26 +1,84 @@
-.my-card{
+/* General Card Styles */
+.my-card {
     box-shadow: var(--shadow);
     min-width: 300px;
     padding: 0.2rem !important;
     font-family: "Montserrat", serif !important;
+    margin: 0;
 }
 
+.my-card p {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-block: 1.5rem;
+}
 
-
-.ant-card-head-title {
-    margin: 0rem !important;
+.my-card .ant-card-head-title {
+    margin: 0 !important;
     font-weight: 500;
 }
 
-
-.my-row{
+/* Layout Styles */
+.my-row, .card-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 2rem auto;
-    width: 90;
+    flex-wrap: wrap;
+    margin: 1.5rem auto;
 }
 
-.my-card{
-    margin: 0;
+.my-row {
+    width: 90%;
+}
+
+.card-row {
+    gap: 2rem;
+    width: 95vw;
+}
+
+/* Specific Card Styling for Current Balance */
+.current-balance {
+    color: var(--white);
+    background-color: var(--primary-purple);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset !important;
+}
+
+.current-balance h2 {
+    font-size: 1.4rem !important;
+}
+
+.current-balance p {
+    font-size: 1.9rem !important;
+    font-weight: 600 !important;
+    text-shadow: var(--shadow-color) !important;
+}
+
+/* Button Styling */
+.reset-balance-btn {
+    padding: .5rem !important;
+}
+
+.reset-balance-btn:hover {
+    letter-spacing: 1px;
+    color: var(--white) !important;
+}
+
+/* Title Styling */
+.title {
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+/* Button Styles for Add Income & Add Expense */
+.card .btn {
+    padding: 0.6rem 1rem;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.card .btn:hover {
+    background-color: var(--primary-blue-dark);
 }
