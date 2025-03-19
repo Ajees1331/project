@@ -1,28 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, Row, Button } from "antd"; // Importing Button directly from 'antd'
 import "./styles.css";
 
-function Cards({ showIncomeModal, showExpenseModal }) {
-  const [balance, setBalance] = useState(0);
-  const [income, setIncome] = useState(0);
-  const [expenses, setExpenses] = useState(0);
-
+function Cards({ income, expense, totalBalance, showIncomeModal, showExpenseModal }) {
   // Function to reset balance, income, and expenses
   const handleReset = () => {
-    setBalance(0);
-    setIncome(0);
-    setExpenses(0);
-  };
-
-  // Functions to add income and expenses and update balance accordingly
-  const addIncome = (amount) => {
-    setIncome((prevIncome) => prevIncome + amount);
-    setBalance((prevBalance) => prevBalance + amount); // Update balance when income is added
-  };
-
-  const addExpense = (amount) => {
-    setExpenses((prevExpenses) => prevExpenses + amount);
-    setBalance((prevBalance) => prevBalance - amount); // Update balance when expense is added
+    // Reset functionality here, if needed (currently there's no state to reset locally)
+    console.log("Resetting Balance..."); 
   };
 
   return (
@@ -36,22 +20,25 @@ function Cards({ showIncomeModal, showExpenseModal }) {
           justifyContent: "space-between",
         }}
       >
+        {/* Current Balance Card */}
         <Card className="my-card" title="Current Balance">
-          <p>₹{balance}</p>
+          <p>₹{totalBalance}</p> {/* Use totalBalance from props */}
           <Button type="primary" onClick={handleReset}>
             Reset Balance
           </Button>
         </Card>
 
+        {/* Total Income Card */}
         <Card className="my-card" title="Total Income">
-          <p>₹{income}</p>
+          <p>₹{income}</p> {/* Use income from props */}
           <Button type="primary" onClick={showIncomeModal}>
             Add Income
           </Button>
         </Card>
 
+        {/* Total Expenses Card */}
         <Card className="my-card" title="Total Expenses">
-          <p>₹{expenses}</p>
+          <p>₹{expense}</p> {/* Use expense from props */}
           <Button type="primary" onClick={showExpenseModal}>
             Add Expense
           </Button>
