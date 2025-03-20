@@ -8,6 +8,7 @@ import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
 import moment from "moment";
+import TransactionTable from "../components/TransactionsTable";
 
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
@@ -53,7 +54,7 @@ function Dashboard() {
   async function addTransaction(transaction) {
     try {
       const docRef = await addDoc(
-        collection(db, `users/${user.uid}/transactions`), // Fixed path
+        collection(db, `users/${user.uid}/transactions`), // Fixed path: Correct template literals
         transaction
       );
       console.log("Document written with ID: ", docRef.id);
@@ -70,13 +71,20 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    // get all docs from a collection
-    fetchTransactions();
-  }, []);
+    if (user) {
+      // Try fetching transactions from localStorage first
+      const savedTransactions = localStorage.getItem("transactions");
+      if (savedTransactions) {
+        setTransactions(JSON.parse(savedTransactions));
+      } else {
+        fetchTransactions();
+      }
+    }
+  }, [user]); // Run when `user` state changes
 
   useEffect(() => {
     calculateBalance();
-  }, [transactions]);
+  }, [transactions]); // Recalculate balance when `transactions` state changes
 
   const calculateBalance = () => {
     let incomeTotal = 0;
@@ -98,15 +106,21 @@ function Dashboard() {
   async function fetchTransactions() {
     setLoading(true);
     if (user) {
-      const q = query(collection(db, `users/${user.uid}/transactions`));
+      const q = query(collection(db, `users/${user.uid}/transactions`)); // Correct path here
       const querySnapshot = await getDocs(q);
       let transactionsArray = [];
       querySnapshot.forEach((doc) => {
-        transactionsArray.push(doc.data());
+        transactionsArray.push({
+          ...doc.data(),
+          id: doc.id, // Optional: Add the document ID for reference
+        });
       });
       setTransactions(transactionsArray);
       console.log("Transactions Array", transactionsArray);
       toast.success("Transactions Fetched!");
+
+      // Save the transactions to localStorage for persistence across page reloads
+      localStorage.setItem("transactions", JSON.stringify(transactionsArray));
     }
     setLoading(false);
   }
@@ -139,6 +153,8 @@ function Dashboard() {
             handleIncomeCancel={handleIncomeCancel}
             onFinish={onFinish}
           />
+
+          <TransactionTable transactions={transactions} />
         </>
       )}
     </div>
